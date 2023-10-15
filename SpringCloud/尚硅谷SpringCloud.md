@@ -4569,7 +4569,7 @@ public class MyLogGateWayFilter implements GlobalFilter,Ordered
 #### 10.1.2、`SpringCloud Config`能干嘛
 
 - 集中管理配置文件。
-- 不同环境不同配置，动态化的配置更新，分环境部署比如：`dev`(开发)/`test`(测试)/`prod`(产品)/`beta`(预发布)/`release`(灰度发布)。
+- 不同环境不同配置，动态化的配置更新，分环境部署比如：`dev`(开发)/`test`(测试)/`prod`(生产)/`beta`(预发布)/`release`(灰度发布)。
 - 运行期间动态调整配置，不再需要在每个服务部署的机器上编写配置文件，服务会向配置中心统一拉取配置自己的信息。
 - 当配置发生变动时，服务不需要重启即可感知到配置的变化并应用新的配置。
 - 将配置信息以`REST`接口的形式暴露。
@@ -4591,8 +4591,105 @@ public class MyLogGateWayFilter implements GlobalFilter,Ordered
 
 ### 10.2、`Config`服务端配置与测试
 
+#### 10.2.1、`Git`配置
+
 - 用你自己的账号在`GitHub`上新建一个名为`springcloud-config`的新`Repository`。
-- 
+  - `git@github.com:seniorCodeFarmer/springcloud-config`
+
+- 本地硬盘目录上新建`Git`仓库并`clone`。
+- `git`命令：`git clone git@github.com:seniorCodeFarmer/springcloud-config`
+- 此时在本地`D`盘符下`D:\44\SpringCloud2020\springcloud-config`
+
+![image-20231015101235479](https://zcw-typora.oss-cn-nanjing.aliyuncs.com/image-20231015101235479.png)
+
+
+
+#### 10.2.2、`config`服务端配置POM
+
+##### 1、新建工程
+
+- 新建工程`cloud-config-center-3344`作为`Cloud`的配置中心模块
+- `POM`
+
+~~~xml
+ 
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>mscloud</artifactId>
+        <groupId>com.atguigu.springcloud</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cloud-config-center-3344</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-config-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
+~~~
+
+- `YUM`
+
+~~~yaml
+server:
+  port: 3344
+
+spring:
+  application:
+    name:  cloud-config-center #注册进Eureka服务器的微服务名
+  cloud:
+    config:
+      server:
+        git:
+          uri: git@github.com:zzyybs/springcloud-config.git #GitHub上面的git仓库名字
+        ####搜索目录
+          search-paths:
+            - springcloud-config
+      ####读取分支
+      label: master
+
+#服务注册到eureka地址
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka
+~~~
 
 
 
